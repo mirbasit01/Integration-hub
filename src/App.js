@@ -12,6 +12,7 @@ import ChartDemo from "./components/ChartDemo/ChartDemo";
 import WalletDemo from "./components/WalletDemo/WalletDemo";
 import ContractDemo from "./components/ContractDemo/ContractDemo";
 import GraphDemo from "./components/GraphDemo/GraphDemo";
+import Guide from "./components/Guide/Guide";
 import "./App.css";
 
 function AppInner() {
@@ -27,6 +28,7 @@ function AppInner() {
           <Route path="/wallet-demo" element={<WalletDemo />} />
           <Route path="/contract-demo" element={<ContractDemo />} />
           <Route path="/graph-demo" element={<GraphDemo />} />
+          <Route path="/guide" element={<Guide />} />
         </Routes>
       </main>
       <ToastContainer theme="dark" />

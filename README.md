@@ -1,207 +1,99 @@
-# ⚡ Integration Hub
+# Integration Hub
 
-A beginner-friendly React project covering all major Web3 integrations in one place.
+A beginner-friendly React project for learning how a frontend connects to REST APIs, real-time services, GraphQL subgraphs, crypto wallets, and smart contracts. Each topic has a working example in the app and a short guided explanation.
 
-## 🎯 What You'll Learn
+**Read the companion article:** [React Integration for Beginners: From API Calls to Smart Contracts](https://medium.com/@mirbasit01/react-integration-for-beginners-from-api-calls-to-smart-contracts-6aa70c9c20b4?postPublishedType=initial)<br>
+**Repository:** [mirbasit01/Integration-hub on GitHub](https://github.com/mirbasit01/Integration-hub)
 
-| Page | Integration | Key Concepts |
-|------|-------------|--------------|
-| `/api-demo` | REST API | axios, service layer, GET/POST/PUT/DELETE |
-| `/socket-demo` | Socket.io | real-time events, rooms, connect/disconnect |
-| `/chart-demo` | Recharts | Line, Bar, Area charts, Redux-driven data |
-| `/wallet-demo` | Wagmi | useAccount, useBalance, useSignMessage, useSwitchChain |
-| `/contract-demo` | Smart Contract | useReadContract, useWriteContract, viem parseUnits |
-| `/graph-demo` | The Graph | GraphQL queries, subgraph, custom query editor |
+## Learning path
 
----
+If you are new to integrations, start with the API demo. It introduces loading and error states, then shows how to keep HTTP requests in reusable service functions. Continue through the guide in this order:
 
-## 🚀 Quick Start
+1. **REST API** (`/api-demo`): Axios, service functions, and GET/POST/PUT/DELETE requests.
+2. **Charts and shared state** (`/chart-demo`): Redux thunks and Recharts.
+3. **Real-time updates** (`/socket-demo`): Socket.IO events and connection lifecycle.
+4. **GraphQL** (`/graph-demo`): Query indexed blockchain data from a subgraph.
+5. **Wallets** (`/wallet-demo`): Connect a wallet, inspect its account, and sign a message.
+6. **Smart contracts** (`/contract-demo`): Read ERC-20 data and send a token transfer.
+
+The article introduces the same core ideas from simpler examples; this repository lets you explore them in a larger React app. The `/guide` page links each concept to the relevant source file and demo.
+
+## Run locally
+
+### Requirements
+
+- Node.js and npm
+- A browser wallet such as MetaMask for wallet and transaction demos
+
+### Setup
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Copy env and fill in your values
-cp .env .env.local
-
-# 3. Start dev server
-npm start
 ```
 
----
-
-## ⚙️ Environment Variables
-
-Edit `.env` with your actual values:
+Create a `.env.local` file in the project root and add the settings you need. The API demo works with its default JSONPlaceholder endpoint; wallet, socket, and subgraph features may need credentials or a running service.
 
 ```env
-REACT_APP_WALLETCONNECT_PROJECT_ID=   # Get from https://cloud.walletconnect.com
-REACT_APP_API_URL=https://jsonplaceholder.typicode.com   # Works out of the box
-REACT_APP_SOCKET_URL=https://your-socket-server.com
-REACT_APP_SUBGRAPH_URL=https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3
-REACT_APP_SUBGRAPH_API_KEY=           # Get from https://thegraph.com/studio
+REACT_APP_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+REACT_APP_API_URL=https://jsonplaceholder.typicode.com
+REACT_APP_SOCKET_URL=https://your-socket-server.example
+REACT_APP_SUBGRAPH_URL=your_subgraph_endpoint
+REACT_APP_SUBGRAPH_API_KEY=your_subgraph_api_key
 REACT_APP_RPC_URL=https://arb1.arbitrum.io/rpc
 ```
 
-> **API Demo** works immediately with `jsonplaceholder.typicode.com` — no key needed.
+Start the development server:
 
----
-
-## 📁 Folder Structure
-
+```bash
+npm start
 ```
+
+Open the local URL printed in the terminal. Restart the development server after changing environment variables.
+
+## How the code is organized
+
+```text
 src/
-├── wagmi/
-│   ├── config.js              # Wagmi chains + connectors setup
-│   └── Provider.js            # WagmiProvider + QueryClientProvider wrapper
-├── hooks/
-│   └── useSocket.js           # Socket.io singleton + useSocketEvents hook
+├── components/       Screens and interactive examples
+├── hooks/            Reusable React hooks, including the Socket.IO hook
+├── redux/            Store, reducers, and async actions
 ├── utils/
-│   ├── Environment.js         # All env variables in one place
-│   ├── axiosClient.js         # Axios instance with interceptors
-│   ├── abi/
-│   │   └── ERC20_ABI.js       # Minimal ERC-20 ABI
-│   └── services/              # ← All API calls live here
-│       ├── posts.services.js  # GET/POST/PUT/DELETE posts
-│       ├── users.services.js  # GET users
-│       └── graph.services.js  # Subgraph GraphQL queries
-├── redux/
-│   ├── action/actions.js      # Redux actions + thunks (call services)
-│   ├── reducer/               # userReducer, priceReducer
-│   └── store/                 # store.js + rootReducer.js
-├── components/
-│   ├── Header/                # Wallet connect button + navigation
-│   ├── Dashboard/             # Overview cards
-│   ├── ApiDemo/               # GET/POST/PUT/DELETE demo
-│   ├── SocketDemo/            # Real-time socket events
-│   ├── ChartDemo/             # Recharts Line/Bar/Area
-│   ├── WalletDemo/            # Wagmi wallet hooks
-│   ├── ContractDemo/          # ERC-20 read + write
-│   └── GraphDemo/             # Subgraph GraphQL queries
-├── App.js                     # Router + providers
-└── index.js                   # Entry point
+│   ├── abi/          ERC-20 contract interface
+│   ├── services/     REST and GraphQL request functions
+│   ├── axiosClient.js Shared Axios configuration
+│   └── Environment.js Environment variable access
+└── wagmi/            Wallet and blockchain provider configuration
 ```
 
----
+For the REST API example, follow the request from the screen to the service function, then to the shared Axios client:
 
-## 🔑 Key Patterns
-
-### Service Layer (API)
-```
-Component → service function → axiosClient → API
-```
-```js
-// utils/services/posts.services.js
-export const getPostsService = async (limit = 5) => {
-  const response = await axiosClient.get(`/posts?_limit=${limit}`);
-  return response.data;
-};
-
-// Component — never calls axiosClient directly
-const posts = await getPostsService(5);
+```text
+ApiDemo component → posts service → Axios client → API
 ```
 
-### Wagmi Config
-```js
-// src/wagmi/config.js
-export const config = createConfig({
-  chains: [arbitrum],
-  connectors: [injected(), metaMask(), walletConnect({ projectId })],
-  transports: { [arbitrum.id]: http(RPC_URL) },
-});
-```
+The component owns the screen state (such as posts and loading status). The service owns the HTTP request. This separation makes both easier to understand and reuse.
 
-### Socket Singleton
-```js
-// src/hooks/useSocket.js
-const socket = io(SOCKET_URL, { transports: ["websocket"], reconnection: true });
+## Environment settings
 
-export const useSocketEvents = (events) => {
-  useEffect(() => {
-    events.forEach(({ eventName, handler }) => socket.on(eventName, handler));
-    return () => events.forEach(({ eventName, handler }) => socket.off(eventName, handler));
-  }, []);
-};
-```
+| Variable | Used for | Example or source |
+|---|---|---|
+| `REACT_APP_API_URL` | REST API base URL | Defaults to JSONPlaceholder in the demo |
+| `REACT_APP_WALLETCONNECT_PROJECT_ID` | WalletConnect sessions | Create a project at [WalletConnect Cloud](https://cloud.walletconnect.com) |
+| `REACT_APP_RPC_URL` | Arbitrum blockchain reads | Public Arbitrum RPC URL |
+| `REACT_APP_SOCKET_URL` | Socket.IO server | URL of a compatible Socket.IO server |
+| `REACT_APP_SUBGRAPH_URL` | GraphQL subgraph requests | Your subgraph endpoint |
+| `REACT_APP_SUBGRAPH_API_KEY` | Authenticated subgraph requests | Key from your subgraph provider |
 
-### Contract Read
-```js
-const { data: balance } = useReadContract({
-  address: CONTRACT_ADDRESS,
-  abi: ERC20_ABI,
-  functionName: "balanceOf",
-  args: [userAddress],
-});
-```
+## Safety note for the contract demo
 
-### Contract Write
-```js
-const { writeContract } = useWriteContract();
-writeContract({
-  address: CONTRACT_ADDRESS,
-  abi: ERC20_ABI,
-  functionName: "transfer",
-  args: [recipient, parseUnits(amount, decimals)],
-});
-```
+The contract screen demonstrates a real ERC-20 transfer on Arbitrum. A write requires a connected wallet, wallet approval, and gas. Use an address and token amount you intend to send, and review the transaction in your wallet before approving it. Reading public contract data does not require a wallet connection.
 
-### Subgraph Query
-```js
-// utils/services/graph.services.js
-export const getRecentSwapsService = async (first = 5) => {
-  const data = await sendQuery(`
-    query GetSwaps($first: Int!) {
-      swaps(first: $first, orderBy: timestamp, orderDirection: desc) {
-        id amountUSD token0 { symbol } token1 { symbol }
-      }
-    }
-  `, { first });
-  return data.swaps;
-};
-```
+## Useful documentation
 
----
-
-## 📦 Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| `wagmi` | Wallet connection, contract hooks |
-| `viem` | Low-level Ethereum utilities |
-| `socket.io-client` | Real-time WebSocket communication |
-| `axios` | HTTP API requests |
-| `recharts` | Charts and data visualization |
-| `@tanstack/react-query` | Server state (required by wagmi) |
-| `react-redux` + `redux-thunk` | Global state management |
-| `react-router-dom` | Client-side routing |
-
----
-
-## 🛠️ Troubleshooting
-
-**Wallet not connecting?**
-- Get a free WalletConnect Project ID at https://cloud.walletconnect.com
-- Set `REACT_APP_WALLETCONNECT_PROJECT_ID` in `.env`
-
-**Socket not connecting?**
-- Socket uses `autoConnect: false` — click "Connect" in the UI
-- Make sure your backend has CORS enabled
-
-**Subgraph returning errors?**
-- Get a free API key at https://thegraph.com/studio
-- Set `REACT_APP_SUBGRAPH_URL` to your specific subgraph endpoint
-
-**Contract reads returning undefined?**
-- Make sure you're on Arbitrum network (chain ID 42161)
-- Demo uses USDC contract on Arbitrum
-
----
-
-## 📚 Resources
-
-- [Wagmi Docs](https://wagmi.sh)
-- [Viem Docs](https://viem.sh)
-- [The Graph Docs](https://thegraph.com/docs)
-- [Socket.io Docs](https://socket.io/docs)
-- [Recharts Docs](https://recharts.org)
-- [WalletConnect Cloud](https://cloud.walletconnect.com)
+- [React](https://react.dev/learn)
+- [Axios](https://axios-http.com/docs/intro)
+- [Wagmi](https://wagmi.sh)
+- [Viem](https://viem.sh)
+- [Socket.IO client](https://socket.io/docs/v4/client-api/)
+- [The Graph](https://thegraph.com/docs)
+- [Recharts](https://recharts.org)

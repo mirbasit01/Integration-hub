@@ -10,9 +10,11 @@ export default function Header() {
 
   const navLinks = [
     { path: "/", label: "Dashboard" },
+    { path: "/guide", label: "📖 Guide" },
     { path: "/api-demo", label: "API" },
     { path: "/socket-demo", label: "Socket" },
     { path: "/chart-demo", label: "Charts" },
+    { path: "/wallet-demo", label: "Wallet" },
     { path: "/contract-demo", label: "Contract" },
     { path: "/graph-demo", label: "Subgraph" },
   ];

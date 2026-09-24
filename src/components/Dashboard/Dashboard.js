@@ -4,6 +4,13 @@ import "./Dashboard.css";
 
 const cards = [
   {
+    path: "/guide",
+    icon: "📖",
+    title: "Integration Guide",
+    desc: "Choose a Web2 or Web3 learning path and follow the steps.",
+    color: "#f97316",
+  },
+  {
     path: "/api-demo",
     icon: "🌐",
     title: "API Integration",
@@ -54,7 +61,7 @@ export default function Dashboard() {
     <div className="dashboard">
       <div className="dashboard-hero">
         <h1>Integration Hub</h1>
-        <p>Beginner-friendly project covering all major integrations in one place</p>
+        <p>A beginner-friendly collection of hands-on examples for connecting React apps to APIs, real-time services, wallets, and smart contracts.</p>
         {isConnected && (
           <div className="connected-badge">
             ✅ Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
