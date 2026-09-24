@@ -1,0 +1,14 @@
+.contract-info { display: flex; flex-direction: column; gap: 10px; }
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #13131f;
+  border-radius: 8px;
+}
+
+.info-row .label { color: #888; font-size: 13px; min-width: 120px; }
+.info-row .value { color: #fff; font-size: 13px; }
+.info-row .value.mono { font-family: monospace; font-size: 11px; word-break: break-all; }

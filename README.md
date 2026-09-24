@@ -1,70 +1,207 @@
-# Getting Started with Create React App
+# ⚡ Integration Hub
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A beginner-friendly React project covering all major Web3 integrations in one place.
 
-## Available Scripts
+## 🎯 What You'll Learn
 
-In the project directory, you can run:
+| Page | Integration | Key Concepts |
+|------|-------------|--------------|
+| `/api-demo` | REST API | axios, service layer, GET/POST/PUT/DELETE |
+| `/socket-demo` | Socket.io | real-time events, rooms, connect/disconnect |
+| `/chart-demo` | Recharts | Line, Bar, Area charts, Redux-driven data |
+| `/wallet-demo` | Wagmi | useAccount, useBalance, useSignMessage, useSwitchChain |
+| `/contract-demo` | Smart Contract | useReadContract, useWriteContract, viem parseUnits |
+| `/graph-demo` | The Graph | GraphQL queries, subgraph, custom query editor |
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 Quick Start
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+# 1. Install dependencies
+npm install
 
-### `npm test`
+# 2. Copy env and fill in your values
+cp .env .env.local
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# 3. Start dev server
+npm start
+```
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## ⚙️ Environment Variables
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Edit `.env` with your actual values:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```env
+REACT_APP_WALLETCONNECT_PROJECT_ID=   # Get from https://cloud.walletconnect.com
+REACT_APP_API_URL=https://jsonplaceholder.typicode.com   # Works out of the box
+REACT_APP_SOCKET_URL=https://your-socket-server.com
+REACT_APP_SUBGRAPH_URL=https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3
+REACT_APP_SUBGRAPH_API_KEY=           # Get from https://thegraph.com/studio
+REACT_APP_RPC_URL=https://arb1.arbitrum.io/rpc
+```
 
-### `npm run eject`
+> **API Demo** works immediately with `jsonplaceholder.typicode.com` — no key needed.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 📁 Folder Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+src/
+├── wagmi/
+│   ├── config.js              # Wagmi chains + connectors setup
+│   └── Provider.js            # WagmiProvider + QueryClientProvider wrapper
+├── hooks/
+│   └── useSocket.js           # Socket.io singleton + useSocketEvents hook
+├── utils/
+│   ├── Environment.js         # All env variables in one place
+│   ├── axiosClient.js         # Axios instance with interceptors
+│   ├── abi/
+│   │   └── ERC20_ABI.js       # Minimal ERC-20 ABI
+│   └── services/              # ← All API calls live here
+│       ├── posts.services.js  # GET/POST/PUT/DELETE posts
+│       ├── users.services.js  # GET users
+│       └── graph.services.js  # Subgraph GraphQL queries
+├── redux/
+│   ├── action/actions.js      # Redux actions + thunks (call services)
+│   ├── reducer/               # userReducer, priceReducer
+│   └── store/                 # store.js + rootReducer.js
+├── components/
+│   ├── Header/                # Wallet connect button + navigation
+│   ├── Dashboard/             # Overview cards
+│   ├── ApiDemo/               # GET/POST/PUT/DELETE demo
+│   ├── SocketDemo/            # Real-time socket events
+│   ├── ChartDemo/             # Recharts Line/Bar/Area
+│   ├── WalletDemo/            # Wagmi wallet hooks
+│   ├── ContractDemo/          # ERC-20 read + write
+│   └── GraphDemo/             # Subgraph GraphQL queries
+├── App.js                     # Router + providers
+└── index.js                   # Entry point
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 🔑 Key Patterns
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Service Layer (API)
+```
+Component → service function → axiosClient → API
+```
+```js
+// utils/services/posts.services.js
+export const getPostsService = async (limit = 5) => {
+  const response = await axiosClient.get(`/posts?_limit=${limit}`);
+  return response.data;
+};
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+// Component — never calls axiosClient directly
+const posts = await getPostsService(5);
+```
 
-### Code Splitting
+### Wagmi Config
+```js
+// src/wagmi/config.js
+export const config = createConfig({
+  chains: [arbitrum],
+  connectors: [injected(), metaMask(), walletConnect({ projectId })],
+  transports: { [arbitrum.id]: http(RPC_URL) },
+});
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Socket Singleton
+```js
+// src/hooks/useSocket.js
+const socket = io(SOCKET_URL, { transports: ["websocket"], reconnection: true });
 
-### Analyzing the Bundle Size
+export const useSocketEvents = (events) => {
+  useEffect(() => {
+    events.forEach(({ eventName, handler }) => socket.on(eventName, handler));
+    return () => events.forEach(({ eventName, handler }) => socket.off(eventName, handler));
+  }, []);
+};
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Contract Read
+```js
+const { data: balance } = useReadContract({
+  address: CONTRACT_ADDRESS,
+  abi: ERC20_ABI,
+  functionName: "balanceOf",
+  args: [userAddress],
+});
+```
 
-### Making a Progressive Web App
+### Contract Write
+```js
+const { writeContract } = useWriteContract();
+writeContract({
+  address: CONTRACT_ADDRESS,
+  abi: ERC20_ABI,
+  functionName: "transfer",
+  args: [recipient, parseUnits(amount, decimals)],
+});
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Subgraph Query
+```js
+// utils/services/graph.services.js
+export const getRecentSwapsService = async (first = 5) => {
+  const data = await sendQuery(`
+    query GetSwaps($first: Int!) {
+      swaps(first: $first, orderBy: timestamp, orderDirection: desc) {
+        id amountUSD token0 { symbol } token1 { symbol }
+      }
+    }
+  `, { first });
+  return data.swaps;
+};
+```
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 📦 Dependencies
 
-### Deployment
+| Package | Purpose |
+|---------|---------|
+| `wagmi` | Wallet connection, contract hooks |
+| `viem` | Low-level Ethereum utilities |
+| `socket.io-client` | Real-time WebSocket communication |
+| `axios` | HTTP API requests |
+| `recharts` | Charts and data visualization |
+| `@tanstack/react-query` | Server state (required by wagmi) |
+| `react-redux` + `redux-thunk` | Global state management |
+| `react-router-dom` | Client-side routing |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+## 🛠️ Troubleshooting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Wallet not connecting?**
+- Get a free WalletConnect Project ID at https://cloud.walletconnect.com
+- Set `REACT_APP_WALLETCONNECT_PROJECT_ID` in `.env`
+
+**Socket not connecting?**
+- Socket uses `autoConnect: false` — click "Connect" in the UI
+- Make sure your backend has CORS enabled
+
+**Subgraph returning errors?**
+- Get a free API key at https://thegraph.com/studio
+- Set `REACT_APP_SUBGRAPH_URL` to your specific subgraph endpoint
+
+**Contract reads returning undefined?**
+- Make sure you're on Arbitrum network (chain ID 42161)
+- Demo uses USDC contract on Arbitrum
+
+---
+
+## 📚 Resources
+
+- [Wagmi Docs](https://wagmi.sh)
+- [Viem Docs](https://viem.sh)
+- [The Graph Docs](https://thegraph.com/docs)
+- [Socket.io Docs](https://socket.io/docs)
+- [Recharts Docs](https://recharts.org)
+- [WalletConnect Cloud](https://cloud.walletconnect.com)

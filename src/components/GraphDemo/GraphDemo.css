@@ -1,0 +1,18 @@
+.query-editor {
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 160px;
+}
+
+.json-result {
+  background: #13131f;
+  color: #10b981;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  overflow-x: auto;
+  margin-top: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}

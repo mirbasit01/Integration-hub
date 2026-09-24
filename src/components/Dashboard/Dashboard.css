@@ -1,0 +1,70 @@
+.dashboard { padding: 40px 32px; max-width: 1100px; margin: 0 auto; }
+
+.dashboard-hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.dashboard-hero h1 {
+  font-size: 40px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c6af7, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+}
+
+.dashboard-hero p { color: #888; font-size: 16px; }
+
+.connected-badge {
+  display: inline-block;
+  margin-top: 16px;
+  background: #0d2d1a;
+  color: #10b981;
+  border: 1px solid #10b981;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #0f0f1a;
+  border: 1px solid #1e1e3a;
+  border-radius: 16px;
+  padding: 28px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-color);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--card-color);
+}
+
+.card-icon { font-size: 32px; margin-bottom: 12px; }
+.card h3 { color: #fff; font-size: 18px; margin-bottom: 8px; }
+.card p { color: #888; font-size: 14px; line-height: 1.5; }
+
+.card-arrow {
+  position: absolute;
+  bottom: 20px; right: 24px;
+  color: var(--card-color);
+  font-size: 20px;
+}
